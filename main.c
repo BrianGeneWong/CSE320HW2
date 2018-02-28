@@ -37,9 +37,9 @@ int main(int argc, char** argv) {
 		head= (header*)ram_pntr;
 		size= (head->size)<<3;
 		id= (head->app_id);
-		printf("size of block is %d\n", size);
-		printf("block is allocated is %d \n", head->allocated);
-		printf("block id is %d \n\n", head->app_id);
+	//	printf("size of block is %d\n", size);
+	//	printf("block is allocated is %d \n", head->allocated);
+	//	printf("block id is %d \n\n", head->app_id);
 		ram_pntr+=size;
 		totalSize+=size;
 	}while(id!=0);
@@ -50,42 +50,47 @@ int main(int argc, char** argv) {
 			
 		}
 	}
-	//FIRST SORY BY ID, IDs can only go up to 1 anyway
+	//FIRST SORY BY ID, IDs can only go up to 3 anyway
+	// ID and allocated nested loops?
 	void* tmp_pntr=tmp_buf;
 	int currID=1;
-	while(currID<4){
+	int allocated=1;
 	ram_pntr=ram;
-		do{
-			head= (header*)ram_pntr;
-			size= (head->size)<<3;
-			id= (head->app_id);
-			if(id==currID){
-			
-								
-				//put into tempbuf
-				memcpy(tmp_pntr,ram_pntr,head->size);
-				tmp_pntr+=(head->size);
-				printf("size of block is %d\n", size);
-				printf("block is allocated is %d \n", head->allocated);
-				printf("block id is %d \n\n", head->app_id);
-
-			}
-			ram_pntr+=size;
-			totalSize+=size;
-		}while(id!=0);
-	/*	while(head->app_id!=0){
-			head=(header*)ram_pntr;
-			if((head->app_id)==currID){
-				//put into tempbuf
-				memcpy(tmp_pntr,ram_pntr,head->size);
-				tmp_pntr+=(head->size);
-				printf("temp block id= %d \n", head->app_id);
-			}
-			ram_pntr+=(head->size);			
+	while(currID<4){
+		while(allocated>=0){
+			printf("looking for id %d and allocated %d \n", currID,allocated);
+			do{
+				head= (header*)ram_pntr;
+				size= (head->size)<<3;
+				id= (head->app_id);
+				int alloc=(head->allocated);
+		//		printf("header is id %d and allocated %d \n", id, alloc);
+				if(id==currID && alloc==allocated){
+									
+					//put into tempbuf
+					memcpy(tmp_pntr,ram_pntr,size);
+					tmp_pntr+=size;
+					printf("size of block is %d\n", size);
+					printf("block is allocated is %d \n", alloc);
+					printf("block id is %d \n\n",id);
+				}
+				ram_pntr+=size;
+			}while(id!=0);
+		allocated--;
+		ram_pntr=ram;
 		}
-	*/
+	allocated=1;
 	currID++;
 	}
+	//after sorting, copy things back into ram.
+	printf("total size is %d\n", totalSize);
+	memcpy(ram,tmp_buf,totalSize);
+
+
+
+    //in the end, add your final block
+   // ram_pntr=(ram)+totalSize;
+    
 
     /*
      * Do not modify code below.
