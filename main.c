@@ -6,7 +6,8 @@ typedef struct {
 	uint64_t app_id : 2;
 	uint64_t size : 61 ;
 
-} header;
+}__attribute__((packed)) header;
+
 
 int main(int argc, char** argv) {
     if (*(argv + 1) == NULL) {
@@ -32,6 +33,11 @@ int main(int argc, char** argv) {
 	int id;
 	int totalSize=0;
 	void *ram_pntr=ram;
+
+	int num1s=0;
+	int num2s=0;
+	int num3s=0;
+
 	header *head;
 	do{
 		head= (header*)ram_pntr;
@@ -58,7 +64,7 @@ int main(int argc, char** argv) {
 	ram_pntr=ram;
 	while(currID<4){
 		while(allocated>=0){
-			printf("looking for id %d and allocated %d \n", currID,allocated);
+		//	printf("looking for id %d and allocated %d \n", currID,allocated);
 			do{
 				head= (header*)ram_pntr;
 				size= (head->size)<<3;
@@ -70,9 +76,9 @@ int main(int argc, char** argv) {
 					//put into tempbuf
 					memcpy(tmp_pntr,ram_pntr,size);
 					tmp_pntr+=size;
-					printf("size of block is %d\n", size);
-					printf("block is allocated is %d \n", alloc);
-					printf("block id is %d \n\n",id);
+		//			printf("size of block is %d\n", size);
+		//			printf("block is allocated is %d \n", alloc);
+		//			printf("block id is %d \n\n",id);
 				}
 				ram_pntr+=size;
 			}while(id!=0);
@@ -86,12 +92,38 @@ int main(int argc, char** argv) {
 	printf("total size is %d\n", totalSize);
 	memcpy(ram,tmp_buf,totalSize);
 
-
-
-    //in the end, add your final block
-   // ram_pntr=(ram)+totalSize;
+    //SORT BY SIZE
     
 
+    //in the end, add your final block
+    ram_pntr=(ram)+totalSize;
+    header* finalHeader= (header*)ram_pntr;
+    finalHeader->allocated=0; 
+    finalHeader->app_id=0;
+    finalHeader->size=(16>>3);
+    //footer 
+    ram_pntr+=8;
+    
+    memcpy(ram_pntr,(ram_pntr-8),8);
+    //traverse one more time to check
+	ram_pntr=ram;
+	do{
+		head= (header*)ram_pntr;
+		size= (head->size)<<3;
+		id= (head->app_id);
+		printf("size of block is %d\n", size);
+		printf("block is allocated is %d \n", head->allocated);
+		printf("block id is %d \n\n", head->app_id);
+		ram_pntr+=size;
+	}while(id!=0);
+	ram_pntr+=8;
+		head= (header*)ram_pntr;
+		size= (head->size)<<3;
+		id= (head->app_id);
+		printf("size of block is %d\n", size);
+		printf("block is allocated is %d \n", head->allocated);
+		printf("block id is %d \n\n", head->app_id);
+	
     /*
      * Do not modify code below.
      */
