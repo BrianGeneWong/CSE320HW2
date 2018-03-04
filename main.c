@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
 	currID++;
 	}
 	//after sorting, copy things back into ram.
-	printf("total size is %d\n", totalSize);
+//	printf("total size is %d\n", totalSize);
 	memcpy(ram,tmp_buf,totalSize);
 
     //SORT BY SIZE
