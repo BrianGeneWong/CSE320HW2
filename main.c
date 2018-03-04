@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
 	
 	//FIRST SORY BY ID, IDs can only go up to 3 anyway
 	// ID and allocated nested loops?
-	printf("\n\n SORY BY ID AND ALLOCATED \n");
+//	printf("\n\n SORY BY ID AND ALLOCATED \n");
 	void* tmp_pntr=tmp_buf;
 	int currID=1;
 	int allocated=1;
@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
     header *bestSize=NULL;
     int prevLowest=0;
     int currLowest=0;
-    printf("\n\nbeginning of sorting by size\n\n");
+  //  printf("\n\nbeginning of sorting by size\n\n");
     while(currID<4){
 		do{
 				
@@ -116,12 +116,12 @@ int main(int argc, char** argv) {
 			id= (head->app_id);
 //			printf("current block id: %d, alloc: %d, size:  %d \n", id, alloc, size);
 			if(alloc==allocated && id==currID){
-				printf(" FOUND A BLOCK id %d alloc %d size: %d\n",id,alloc,size);
-				printf(" prevlowest: %d  currlowest %d\n",prevLowest,currLowest);
+//				printf(" FOUND A BLOCK id %d alloc %d size: %d\n",id,alloc,size);
+//				printf(" prevlowest: %d  currlowest %d\n",prevLowest,currLowest);
 					
 				if(size<currLowest){
 
-				printf("SECOND  prevlowest: %d  currlowest %d\n",prevLowest,currLowest);
+//				printf("SECOND  prevlowest: %d  currlowest %d\n",prevLowest,currLowest);
 					currLowest=size;
 					bestSize=head;
 					if(currLowest>prevLowest || size==prevLowest){
@@ -142,7 +142,7 @@ int main(int argc, char** argv) {
 				size= (bestSize->size)<<3;
 				id= (bestSize->app_id);
 				bestSize=NULL;
-				printf("COPY BLOCK id: %d, alloc: %d, size:  %d \n", id, alloc, size);
+//				printf("COPY BLOCK id: %d, alloc: %d, size:  %d \n", id, alloc, size);
 			}
 			else{
 				allocated--;
@@ -160,7 +160,7 @@ int main(int argc, char** argv) {
 
 
     //COALESCE
-    printf("\n COALESCCE HERE\n");
+  //  printf("\n COALESCCE HERE\n");
     ram_pntr=ram;
     tmp_pntr=tmp_buf;
     header* nextHeader;
@@ -171,15 +171,18 @@ int main(int argc, char** argv) {
 	size= (head->size)<<3;
 	id= (head->app_id);	
 	alloc=(head->allocated);
-	printf("id: %d, alloc: %d, size:  %d \n", id, alloc, size);
+//	printf("id: %d, alloc: %d, size:  %d \n", id, alloc, size);
         nextHeader=(header*)(ram_pntr+size);
 	if(nextHeader->app_id==0)
 		break;
         if(head->app_id==nextHeader->app_id && head->allocated==0 && nextHeader->allocated==0){
-		printf("FOUND TWO FREE BLOCKS\n");
+//		printf("FOUND TWO FREE BLOCKS\n");
 		size=size+((nextHeader->size)<<3);
 		head->size=(size>>3);
-		memcpy(head+size-8,head,8);
+//		printf("new size is %d\n",size);
+		nextHeader=(header*)(ram_pntr+size-8);
+//		printf("header: %p, footer: %p \n", head,nextHeader);
+		memcpy(nextHeader,head,8);
 		change=1;
 	}
 	if(change){
@@ -190,7 +193,7 @@ int main(int argc, char** argv) {
 		ram_pntr+=size;
 	
     }
-    printf("done coaslescing");
+  //  printf("done coaslescing");
     //in the end, add your final block
     ram_pntr=(ram)+totalSize;
     head= (header*)ram_pntr;
@@ -202,15 +205,22 @@ int main(int argc, char** argv) {
     memcpy(ram_pntr,(ram_pntr-8),8);
     //traverse one more time to check
 	
-	printf("\n\n FINAL TRAVERSAL TO CHECK\n");
+//	printf("\n\n FINAL TRAVERSAL TO CHECK\n");
 	ram_pntr=ram;
 	do{
 		head= (header*)ram_pntr;
 		size= (head->size)<<3;
 		id= (head->app_id);
 		alloc=(head->allocated);
-		printf("id: %d, alloc: %d, size:  %d \n", id, alloc, size);
-		ram_pntr+=size;
+//		printf("header :id: %d, alloc: %d, size:  %d \n", id, alloc, size);
+		ram_pntr+=size-8;			
+		head= (header*)ram_pntr;
+		size= (head->size)<<3;
+		id= (head->app_id);
+		alloc=(head->allocated);
+
+//		printf("footer id: %d, alloc: %d, size:  %d \n\n", id, alloc, size);
+		ram_pntr+=8;
 	}while(id!=0);
 	ram_pntr+=8;
 /*		head= (header*)ram_pntr;
