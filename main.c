@@ -118,25 +118,29 @@ int main(int argc, char** argv) {
 			if(alloc==allocated && id==currID){
 //				printf(" FOUND A BLOCK id %d alloc %d size: %d\n",id,alloc,size);
 //				printf(" prevlowest: %d  currlowest %d\n",prevLowest,currLowest);
-					
-				if(size<currLowest){
-
-//				printf("SECOND  prevlowest: %d  currlowest %d\n",prevLowest,currLowest);
+			        if(currLowest==0){
+					if(size>prevLowest){
 					currLowest=size;
 					bestSize=head;
-					if(currLowest>prevLowest || size==prevLowest){
-					currLowest=size;
-					bestSize=head;		
-			//		printf("current best size %d\n",currLowest);
 					}
-				}				
+				}
+				else{
+					if(size<currLowest && size>prevLowest){
+							currLowest=size;
+							bestSize=head;
+					
+					}
+
+				}
+								
 			}
 			ram_pntr+=size;
 		}while(id!=0);
-			currLowest=0;
-			if(bestSize!=NULL){;
-				prevLowest=(bestSize->size)<<3;
-				memcpy(tmp_pntr,bestSize,prevLowest);
+//			printf("FOUND ID IS ZERO,bestHeader is %p bestsize %d, prev lowest %d\n\n",bestSize,currLowest,prevLowest);
+			if(bestSize!=NULL){
+//				printf("WE GON COPY STUFF NOW\n");
+				prevLowest=currLowest;
+				memcpy(tmp_pntr,bestSize,currLowest);
 				tmp_pntr+=prevLowest;
 				alloc= (bestSize->allocated);
 				size= (bestSize->size)<<3;
@@ -145,6 +149,7 @@ int main(int argc, char** argv) {
 //				printf("COPY BLOCK id: %d, alloc: %d, size:  %d \n", id, alloc, size);
 			}
 			else{
+//				printf("DIDNT FIND ANYTHING \n");
 				allocated--;
 				if(allocated==-1){
 					allocated=1;
@@ -153,6 +158,7 @@ int main(int argc, char** argv) {
 				prevLowest=0;
 			}
 	ram_pntr=ram;
+	currLowest=0;
 
     }
 
@@ -193,7 +199,7 @@ int main(int argc, char** argv) {
 		ram_pntr+=size;
 	
     }
-  //  printf("done coaslescing");
+  
     //in the end, add your final block
     ram_pntr=(ram)+totalSize;
     head= (header*)ram_pntr;
