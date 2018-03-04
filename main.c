@@ -50,13 +50,15 @@ int main(int argc, char** argv) {
 		ram_pntr+=size;
 		totalSize+=size;
 	}while(id!=0);
-	if(totalSize>128){
-		if(cse320_sbrk(totalSize-128)==NULL){
+	
+//	if(totalSize>128){
+		if(cse320_sbrk(1024-128)==NULL){
 			printf("SBRK_ERROR\n");
 			return errno;
 			
 		}
-	}
+//	}
+	
 	//FIRST SORY BY ID, IDs can only go up to 3 anyway
 	// ID and allocated nested loops?
 	void* tmp_pntr=tmp_buf;
@@ -103,7 +105,7 @@ int main(int argc, char** argv) {
     header *bestSize=NULL;
     int prevLowest=0;
     int currLowest=0;
-    printf("\n\nbeginning of sorting by size\n\n");
+  //  printf("\n\nbeginning of sorting by size\n\n");
     while(currID<4){
 		do{
 				
@@ -115,14 +117,14 @@ int main(int argc, char** argv) {
 			id= (head->app_id);
 //			printf("current block id: %d, alloc: %d, size:  %d \n", id, alloc, size);
 			if(alloc==allocated && id==currID){
-				printf(" FOUND A BLOCK, size:%d , lowestSize: %d  currSize %d\n",size,prevLowest,currLowest);
+			//	printf(" FOUND A BLOCK, size:%d , lowestSize: %d  currSize %d\n",size,prevLowest,currLowest);
 					
 				if(size<currLowest|| currLowest==0){
 					currLowest=size;
 					if(currLowest>prevLowest){
 					currLowest=size;
 					bestSize=head;		
-					printf("FOUND THE BEST SIZE %p\n",bestSize);
+//					printf("FOUND THE BEST SIZE %p\n",bestSize);
 					}
 				}				
 			}
@@ -137,7 +139,7 @@ int main(int argc, char** argv) {
 				size= (bestSize->size)<<3;
 				id= (bestSize->app_id);
 				bestSize=NULL;
-				printf("BEST BLOCK id: %d, alloc: %d, size:  %d \n", id, alloc, size);
+//				printf("BEST BLOCK id: %d, alloc: %d, size:  %d \n", id, alloc, size);
 			}
 			else{
 				allocated--;
@@ -163,9 +165,9 @@ int main(int argc, char** argv) {
     head->size=(16>>3);
     //footer 
     ram_pntr+=8;
-/*    
-     memcpy(ram_pntr,(ram_pntr-8),8);
+    memcpy(ram_pntr,(ram_pntr-8),8);
     //traverse one more time to check
+	/*
 	printf("\n\n FINAL TRAVERSAL TO CHECK\n");
 	ram_pntr=ram;
 	do{
@@ -182,7 +184,7 @@ int main(int argc, char** argv) {
 		alloc=(head->allocated);
 		id= (head->app_id);
 		printf("id: %d, alloc: %d, size:  %d \n", id, alloc, size);
-*/	
+	*/
     /*
      * Do not modify code below.
      */
