@@ -34,35 +34,45 @@ int main(int argc, char** argv) {
 	int totalSize=0;
 	int alloc;
 	void *ram_pntr=ram;
-
-	int num1s=0;
-	int num2s=0;
-	int num3s=0;
-
+	void* tmp_pntr=tmp_buf;
+	
+	int ramSize=0;
 	header *head;
-	do{
+	//we can get rid of gaps here also
+		if(cse320_sbrk(1024-128)==NULL){
+			printf("SBRK_ERROR\n");
+			return errno;
+			
+		}
+	while(ramSize<1024){
 		head= (header*)ram_pntr;
 		size= (head->size)<<3;
 		id= (head->app_id);
 //		printf("block is allocated is %d \n", head->allocated);
 //		printf("block id is %d \n", head->app_id);
 //		printf("size of block is %d\n\n", size);
-		ram_pntr+=size;
-		totalSize+=size;
-	}while(id!=0);
-	
-//	if(totalSize>128){
-		if(cse320_sbrk(1024-128)==NULL){
-			printf("SBRK_ERROR\n");
-			return errno;
-			
+		if(size==0){
+			ramSize+=8;
+			ram_pntr+=8;
 		}
-//	}
+		else{
+			memcpy(tmp_pntr,ram_pntr,size);
+//			printf("copy block of id %d and size %d\n",id,size);
+			tmp_pntr+=size;
+			ram_pntr+=size;
+			totalSize+=size;
+			ramSize+=size;
+		}
+	}
+//	printf("ramSize: %d totalSize %d \n", ramSize,totalSize);
+	memcpy(ram,tmp_buf,1024);	
+	//lets traverse through temp buf
+	
 	
 	//FIRST SORY BY ID, IDs can only go up to 3 anyway
 	// ID and allocated nested loops?
 //	printf("\n\n SORY BY ID AND ALLOCATED \n");
-	void* tmp_pntr=tmp_buf;
+	tmp_pntr=tmp_buf;
 	int currID=1;
 	int allocated=1;
 	ram_pntr=ram;
@@ -74,7 +84,7 @@ int main(int argc, char** argv) {
 				size= (head->size)<<3;
 				id= (head->app_id);
 				alloc=(head->allocated);
-		//		printf("header is id %d and allocated %d \n", id, alloc);
+//				printf("header is id %d and allocated %d \n", id, alloc);
 				if(id==currID && alloc==allocated){
 									
 					//put into tempbuf
