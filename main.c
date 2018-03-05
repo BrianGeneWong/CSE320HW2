@@ -68,6 +68,11 @@ int main(int argc, char** argv) {
 	memcpy(ram,tmp_buf,1024);	
 	//lets traverse through temp buf
 	
+		if(totalSize>(1024-16)){
+			printf("SBRK_ERROR\n");
+			return ENOMEM;
+			
+		}
 	
 	//FIRST SORY BY ID, IDs can only go up to 3 anyway
 	// ID and allocated nested loops?
